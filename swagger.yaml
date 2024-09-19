@@ -1,0 +1,167 @@
+openapi: 3.0.3
+info:
+  title: ON-DEMAND MOBILITY - Optimized Prices
+  description: |
+    This server calculates the optimal prices for a request based on Genetic Algorithms[https://en.wikipedia.org/wiki/Genetic_algorithm].
+    The user can decide between three different ways to get the optimal price.
+    First, the calculation of the optimal price for the company.
+    Second, the calculation of the optimal price based on the costs for a customer.
+    And last, the calculation of the optimal price for the customer.
+  version: "1.0"
+externalDocs:
+  description: Implementation
+  url: https://gitlab.dke.univie.ac.at/cmke_ws23/g9_optimizeprice
+servers:
+  - url: http://127.0.0.1:5000/api/pricing
+tags:
+  - name: pricing
+    description: Calculation of the optimal price.
+paths:
+  /company:
+    post:
+      tags:
+        - company_pricing
+      summary: Calculates optimal price for the company
+      description: Calculates the optimal price with Genetic Algorithms.
+      operationId: company_pricing
+      requestBody:
+        description: The needed parameters for the calculation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Company'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Page not found
+        '422':
+          description: Validation exception
+components:
+  schemas:
+    Company:
+      required:
+        - options
+        - parameters
+        - trip
+      type: object
+      properties:
+        options:
+          required:
+             - central_point
+             - threshold_km
+          type: object
+          properties:
+            central_point:
+              required:
+                - lat
+                - lon
+              type: object
+              properties:
+                lat:
+                  type: number
+                  format: float
+                  example: 41.24
+                lon:
+                  type: number
+                  format: float
+                  example: 17.23
+            threshold_km:
+              type: integer
+              format: int64
+              example: 10
+        trip:
+          required:
+            - start
+            - ende
+          type: object
+          properties:
+            start:
+              required:
+                - lat
+                - lon
+              type: object
+              properties:
+                lat:
+                  type: number
+                  format: float
+                  example: 44.32
+                lon:
+                  type: number
+                  format: float
+                  example: 12.34
+            end:
+              required:
+                - lat
+                - lon
+              type: object
+              properties:
+                lat:
+                  type: number
+                  format: float
+                  example: 41.37
+                lon:
+                  type: number
+                  format: float
+                  example: 10.78
+    Response:
+      type: object
+      properties:
+        best_individual:
+          type: array
+          items:
+            type: number
+            format: float
+          example: [1.2, 1.2, 0.9794775402771585, 1.1999999987067547, 1.1999999958963035]
+        best_price:
+          type: number
+          format: float
+          example: 2.62
+        currency:
+          type: string
+          example: EUR
+        currency_symbol:
+          type: string
+          example: '€'
+        parameters:
+          type: object
+          properties:
+            base_price:
+              type: number
+              format: float
+              example: 1.0
+            customer_loyalty:
+              type: boolean
+              example: false
+            weather_condition:
+              type: string
+              example: moderate
+            day_of_week:
+              type: string
+              example: Sunday
+            remoteness:
+              type: boolean
+              example: true
+            loyalty_discount:
+              type: number
+              format: float
+              example: 0.1
+            weather_surcharge:
+              type: number
+              format: float
+              example: 1.2
+        profit:
+          type: number
+          format: float
+          example: 1.62
+        profit_percentage:
+          type: number
+          format: float
+          example: 162.31

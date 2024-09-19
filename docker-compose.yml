@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  web:
+    build:
+      context: ./src  
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000" 
+    volumes:
+      - ./data:/usr/src/app/data 
+      - ./notebooks:/usr/src/app/notebooks  
+      - ./src:/usr/src/app  
+    environment:
+      - FLASK_ENV=development
